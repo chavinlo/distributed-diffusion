@@ -163,27 +163,33 @@ def getchunk(amount, conf, log_queue):
 
 
 def download_image(post_id, image_ext, conf):
-    # Download the image
-    image_url = f"https://crowdcloud.us-southeast-1.linodeobjects.com/crowdcloud/opendataset/v1/danbooru/{post_id}.{image_ext}"
-    image_response = requests.get(image_url)
-    open(f"{conf.intern.tmpdataset}/{post_id}.{image_ext}", 'wb').write(image_response.content)
 
-    # Download the tags
-    tags_url = f"https://crowdcloud.us-southeast-1.linodeobjects.com/crowdcloud/opendataset/v1/danbooru/{post_id}.json"
-    tags_response = requests.get(tags_url).json()
-    tags = tags_response['tags']
-    open(f"{conf.intern.tmpdataset}/{post_id}.txt", 'w').write(', '.join(tags))
+    try:
+        # Download the image
+        image_url = f"https://crowdcloud.us-southeast-1.linodeobjects.com/crowdcloud/opendataset/v1/danbooru/{post_id}.{image_ext}"
+        image_response = requests.get(image_url)
+        if image_response.status_code != 200:
+            raise ConnectionError("Image Response not 200")
+        open(f"{conf.intern.tmpdataset}/{post_id}.{image_ext}", 'wb').write(image_response.content)
 
-    if os.path.exists(f"{conf.intern.tmpdataset}/{post_id}.txt") is False or os.path.exists(f"{conf.intern.tmpdataset}/{post_id}.{image_ext}") is False:
-        try:
-            os.remove(f"{conf.intern.tmpdataset}/{post_id}.txt")
-        except Exception:
-            pass
-        try:
+        # Download the tags
+        tags_url = f"https://crowdcloud.us-southeast-1.linodeobjects.com/crowdcloud/opendataset/v1/danbooru/{post_id}.json"
+        tags_response = requests.get(tags_url)
+        if tags_response.status_code != 200:
+            raise ConnectionError("Tags Response not 200")
+        tags = tags_response.json()['tags']
+        if not tags:
+            raise ConnectionError("Tags is empty")
+        open(f"{conf.intern.tmpdataset}/{post_id}.txt", 'w').write(', '.join(tags))
+    except ConnectionError as e:
+        print("Failed to retrieve entry", post_id)
+        print("Reason:", e)
+
+        if os.path.exists(f"{conf.intern.tmpdataset}/{post_id}.{image_ext}"):
             os.remove(f"{conf.intern.tmpdataset}/{post_id}.{image_ext}")
-        except Exception:
-            pass
 
+        if os.path.exists(f"{conf.intern.tmpdataset}/{post_id}.txt"):
+            os.remove(f"{conf.intern.tmpdataset}/{post_id}.txt")
 
 def dataloader(tokenizer, text_encoder, device, world_size, rank, conf, log_queue):
     # load dataset
