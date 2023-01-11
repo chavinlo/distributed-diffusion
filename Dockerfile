@@ -1,20 +1,23 @@
-FROM nvcr.io/nvidia/pytorch:22.11-py3
-# Conda 
+FROM ubuntu:22.04
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt update -y && apt install -qq  -y curl # ffmpeg libsm6 libxext6
-RUN curl https://repo.anaconda.com/pkgs/misc/gpgkeys/anaconda.asc | gpg --dearmor > conda.gpg 
-RUN install -o root -g root -m 644 conda.gpg /usr/share/keyrings/conda-archive-keyring.gpg 
-RUN gpg --keyring /usr/share/keyrings/conda-archive-keyring.gpg --no-default-keyring --fingerprint 34161F5BF5EB1D4BFBBB8F0A8AEB4F8B29D82806
-RUN echo "deb [arch=amd64 signed-by=/usr/share/keyrings/conda-archive-keyring.gpg] https://repo.anaconda.com/pkgs/misc/debrepo/conda stable main" > /etc/apt/sources.list.d/conda.list
-RUN apt update && apt install conda 
-ADD ./environment.yml /tmp/env.yml
-ENV PATH /opt/conda/bin:$PATH
-RUN --mount=type=cache,target=/opt/conda/pkgs conda env create -f /tmp/env.yml
-# Make RUN commands use the new environment:
+RUN apt update -y && apt install -qq  -y curl wget screen atop htop psmisc git
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.0-1_all.deb
+RUN dpkg -i cuda-keyring_1.0-1_all.deb
+RUN apt update -y && apt install -qq -y python3-dev python3-pip cuda-11-7
+RUN --mount=type=cache,target=~/.cache pip install ninja networkx torch torchvision --force-reinstall --extra-index-url https://download.pytorch.org/whl/cu117
+RUN wget https://download.pytorch.org/whl/nightly/torchtriton-2.0.0%2Bf16138d447-cp310-cp310-linux_x86_64.whl
+RUN --mount=type=cache,target=~/.cache pip install torchtriton-2.0.0+f16138d447-cp310-cp310-linux_x86_64.whl
+WORKDIR /
+RUN git clone https://github.com/facebookresearch/xformers.git
+WORKDIR xformers
+RUN git submodule update --init --recursive
+WORKDIR /
+ENV CUDA_HOME /usr/local/cuda
+ENV TORCH_CUDA_ARCH_LIST 7.0 8.0
+RUN --mount=type=cache,target=~/.cache pip install -e xformers
 COPY requirements.txt .
-SHELL ["conda", "run", "-n", "venv", "/bin/bash", "-c"]
 RUN --mount=type=cache,target=~/.cache pip install -r requirements.txt
 ADD . /distributed-training
 WORKDIR /distributed-training
-ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "venv", "python", "server.py"]
-EXPOSE 5000
+ENTRYPOINT ["python3", "server.py"]
+EXPOSE 5080
