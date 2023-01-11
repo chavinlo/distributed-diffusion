@@ -58,7 +58,7 @@ jobs:
         id: cache
         with:
           image: ghcr.io/${{github.repository}}/cache
-      - uses: docker/build-push-action@v2
+      - uses: docker/build-push-action@v3
         id: build
         with:
           push: true
