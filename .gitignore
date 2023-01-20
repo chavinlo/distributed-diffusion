@@ -7,3 +7,4 @@ DO_NOT_DELETE_config.pickle
 __pycache__/
 data.db
 database.db
+serverlist/instance/*
