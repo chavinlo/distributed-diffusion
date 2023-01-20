@@ -17,4 +17,4 @@ RUN --mount=type=cache,target=~/.cache pip install -r requirements.txt
 ADD . /distributed-training
 WORKDIR /distributed-training
 ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "venv", "python", "server.py"]
-EXPOSE 5000
+EXPOSE 5080
