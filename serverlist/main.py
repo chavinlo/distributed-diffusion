@@ -1,8 +1,10 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 import json
 
 app = Flask(__name__)
+CORS(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///server_list.db"
 db = SQLAlchemy(app)
 
@@ -83,5 +85,5 @@ def delete_server(id):
     return jsonify({"message": "Server deleted successfully"})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=4000)
 

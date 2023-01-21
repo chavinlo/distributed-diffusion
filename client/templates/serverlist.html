@@ -36,16 +36,63 @@
           <li id="swarm-server-entry-0" class="swarm-server-entry">
             <div class="swarm-server-entry-logo"><img id="swarm-server-entry-logo" loading="lazy" src="images/snailgang.png" alt="" class="swarm-server-entry-logo-icon"></div>
             <div class="swarm-server-entry-info">
-              <h1 id="swarm-server-entry-info-header" class="swarm-server-entry-info-header">Swarm Title</h1>
-              <div id="swarm-server-entry-info-author" class="swarm-server-entry-info-author">JohnDoe95</div>
-              <p id="swarm-server-entry-info-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat. Aenean faucibus nibh et justo cursus id rutrum lorem imperdiet. Nunc ut sem vitae risus tristique posuere.</p>
+              <h1 id="swarm-server-entry-info-header" class="swarm-server-entry-info-header"></h1>
+              <div id="swarm-server-entry-info-author" class="swarm-server-entry-info-author"></div>
+              <p id="swarm-server-entry-info-desc"></p>
             </div>
             <div class="div-block-29">
-              <div id="swarm-server-entry-join-stats">👥 120 Peers Online<br>⚡ 143.5 TFLOPs</div>
+              <div id="swarm-server-entry-join-stats-peers"></div>
+              <div id="swarm-server-entry-join-stats-tflops"></div>
               <a id="swarm-server-entry-join-btn" href="#" class="button-4 w-button">Join</a>
             </div>
           </li>
         </ol>
+        <script>
+          const template = document.querySelector("#swarm-server-entry-0");
+          template.remove();
+
+          fetch("http://127.0.0.1:4000/servers")
+            .then((response) => response.json())
+            .then((data) => {
+
+              data.forEach((server) => {
+                if(server.info.logo.includes("i.imgur.com")){
+                  server.info.logo = "images/snailgang.png"
+                }
+              });
+              
+              const list = document.querySelector(".swarm-server-list");
+
+              data.forEach((server) => {
+                const entry = template.cloneNode(true);
+                entry.setAttribute("id", `swarm-server-entry-${server.id}`);
+
+                const logo = entry.querySelector("#swarm-server-entry-logo");
+                logo.setAttribute("src", server.info.logo);
+                logo.setAttribute("alt", server.info.name);
+
+                const title = entry.querySelector("#swarm-server-entry-info-header");
+                title.textContent = server.info.name;
+
+                const author = entry.querySelector("#swarm-server-entry-info-author");
+                author.textContent = server.info.author;
+
+                const desc = entry.querySelector("#swarm-server-entry-info-desc");
+                desc.textContent = server.info.desc;
+
+                const peers = entry.querySelector("#swarm-server-entry-join-stats-peers");
+                peers.textContent = `👥 ${server.peers} Peers Online `;
+
+                const tflops = entry.querySelector("#swarm-server-entry-join-stats-tflops");
+                tflops.textContent = `⚡ ${server.resources.tflops} TFLOPs`;
+
+                const joinButton = entry.querySelector("#swarm-server-entry-join-btn");
+                joinButton.setAttribute("href", `join?server=${server.id}`);
+
+                list.appendChild(entry);
+              });
+            });
+        </script>
       </div>
       <div data-w-tab="Tab 2" class="w-tab-pane">
         <div class="stats-display">
@@ -109,12 +156,6 @@
                 <div class="div-block-33"><label for="password-input">Password</label><input type="password" class="w-input" maxlength="256" name="password" data-name="password" placeholder="" id="password-input"></div>
               </div><input type="submit" value="Save" data-wait="Saving..." id="save-config-button" class="w-button">
             </form>
-            <div class="w-form-done">
-              <div>Thank you! Your submission has been received!</div>
-            </div>
-            <div class="w-form-fail">
-              <div>Oops! Something went wrong while submitting the form.</div>
-            </div>
           </div>
         </div>
       </div>
