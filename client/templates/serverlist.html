@@ -87,7 +87,10 @@
                 tflops.textContent = `⚡ ${server.resources.tflops} TFLOPs`;
 
                 const joinButton = entry.querySelector("#swarm-server-entry-join-btn");
-                joinButton.setAttribute("href", `join?server=${server.id}`);
+                joinButton.setAttribute("href", "javascript:void(0)");
+                joinButton.addEventListener("click", () => {
+                  fetch(`/join?server=${server.id}`, { method: "POST" });
+                });
 
                 list.appendChild(entry);
               });
@@ -139,10 +142,10 @@
                     <option value="client">Client</option>
                     <option value="relay">Relay</option>
                   </select></div>
-                <div class="div-block-33"><label for="prefer-input">Prefer</label><select id="prefer-input" name="prefer" data-name="prefer" required="" class="w-select">
+                <!-- <div class="div-block-33"><label for="prefer-input">Prefer</label><select id="prefer-input" name="prefer" data-name="prefer" required="" class="w-select">
                     <option value="speed">Speed</option>
                     <option value="resources">Resources</option>
-                  </select></div>
+                  </select></div> -->
               </div>
               <div class="div-block-31">
                 <div class="div-block-32"><label for="hftoken-input">HuggingFace Token</label><input type="text" class="w-input" maxlength="256" name="hftoken" data-name="hftoken" placeholder="" id="hftoken-input"></div>
@@ -158,6 +161,26 @@
             </form>
           </div>
         </div>
+        <script>
+          const form = document.querySelector("#wf-form-configuration");
+
+          form.addEventListener("submit", (event) => {
+              event.preventDefault();
+              const formData = new FormData(form);
+              const jsonData = {};
+              formData.forEach((value, key) => {
+                  jsonData[key] = value;
+              });
+
+              fetch("http://127.0.0.1:5000/config/save", {
+                  method: "POST",
+                  body: JSON.stringify(jsonData),
+                  headers: {
+                      "Content-Type": "application/json"
+                  }
+              });
+          });
+        </script>
       </div>
     </div>
   </div>
