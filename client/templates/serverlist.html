@@ -20,10 +20,10 @@
 <body class="body-8">
   <div data-current="Tab 1" data-easing="ease" data-duration-in="300" data-duration-out="100" class="tabs-main w-tabs">
     <div class="tabs-main-menu w-tab-menu">
-      <a data-w-tab="Tab 1" class="w-inline-block w-tab-link w--current">
+      <a data-w-tab="Tab 1" class="w-inline-block w-tab-link">
         <div>Swarm List</div>
       </a>
-      <a data-w-tab="Tab 2" class="w-inline-block w-tab-link">
+      <a data-w-tab="Tab 2" class="w-inline-block w-tab-link w--current">
         <div>Statistics</div>
       </a>
       <a data-w-tab="Tab 3" class="w-inline-block w-tab-link">
@@ -104,30 +104,38 @@
             <div id="stats-logs-panel" class="stats-logs-panel"></div>
           </div>
           <div class="trainer-stats-info">
-            <h1 class="trainer-stats-header">Stats</h1>
-            <ol role="list" class="w-list-unstyled">
-              <li class="stats-info-entry">
-                <div class="stats-info-text">Loss: 0.10</div>
-              </li>
-              <li class="stats-info-entry">
-                <div class="stats-info-text">Epoch: 3</div>
-              </li>
-              <li class="stats-info-entry">
-                <div class="stats-info-text">Learning Rate: 1e-5</div>
-              </li>
-              <li class="stats-info-entry">
-                <div class="stats-info-text">Local Step: 1030</div>
-              </li>
-              <li class="stats-info-entry">
-                <div class="stats-info-text">Local Step/s: 3</div>
-              </li>
-              <li class="stats-info-entry">
-                <div class="stats-info-text">Global Step: 104,002</div>
-              </li>
-              <li class="stats-info-entry">
-                <div class="stats-info-text">Global Step/s: 94</div>
-              </li>
-            </ol>
+            <div>
+              <h1 class="trainer-stats-header">Controls</h1>
+              <div class="stats-info-text">Status: Stopped</div>
+              <a href="#" class="button-5 w-button">Start</a>
+              <a href="#" class="button-5 w-button">Stop</a>
+            </div>
+            <div>
+              <h1 class="trainer-stats-header">Stats</h1>
+              <ol role="list" class="w-list-unstyled">
+                <li class="stats-info-entry">
+                  <div class="stats-info-text">Loss: 0.10</div>
+                </li>
+                <li class="stats-info-entry">
+                  <div class="stats-info-text">Epoch: 3</div>
+                </li>
+                <li class="stats-info-entry">
+                  <div class="stats-info-text">Learning Rate: 1e-5</div>
+                </li>
+                <li class="stats-info-entry">
+                  <div class="stats-info-text">Local Step: 1030</div>
+                </li>
+                <li class="stats-info-entry">
+                  <div class="stats-info-text">Local Step/s: 3</div>
+                </li>
+                <li class="stats-info-entry">
+                  <div class="stats-info-text">Global Step: 104,002</div>
+                </li>
+                <li class="stats-info-entry">
+                  <div class="stats-info-text">Global Step/s: 94</div>
+                </li>
+              </ol>
+            </div>
           </div>
         </div>
       </div>
@@ -159,8 +167,8 @@
                 <div class="div-block-33"><label for="password-input">Password</label><input type="password" class="w-input" maxlength="256" name="password" data-name="password" placeholder="" id="password-input"></div>
               </div><input type="submit" value="Save" data-wait="Saving..." id="save-config-button" class="w-button">
             </form>
-          </div>
-        </div>
+            </div>
+            </div>
         <script>
           const form = document.querySelector("#wf-form-configuration");
 
