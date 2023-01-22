@@ -1,9 +1,13 @@
 from flask import Flask, render_template, request, jsonify
 import requests
 import os
+import subprocess
 
+trainers_dir = '../trainers/'
+full_config = {}
 local_config = {}
 config_to_send = {}
+trainer_process = None
 
 def get_all_items(path):
     items = []
@@ -32,12 +36,15 @@ def join():
     response = requests.get(f'http://127.0.0.1:4000/servers/{server_id}')
     response = response.json()
 
-    available_trainers = get_all_items('../trainers/')
+    available_trainers = get_all_items(trainers_dir)
     if response['trainer_script'] not in available_trainers:
         return jsonify({
             "info": "trainer not found",
             "available trainers": available_trainers
         })
+
+    global full_config
+    full_config = response
 
     global config_to_send
     config_to_send = {
@@ -48,6 +55,24 @@ def join():
     }
     
     return "ok"
+
+@app.route('/start')
+def start_trainer():
+    global full_config
+    global trainer_process
+    command = '../trainers/' + full_config['trainer_script']
+    trainer_process = subprocess.Popen(command, shell=True)
+    return "Trainer started in a separate process."
+
+@app.route('/stop')
+def stop_trainer():
+    global trainer_process
+    if trainer_process:
+        trainer_process.terminate()
+        trainer_process = None
+        return "Trainer process terminated."
+    else:
+        return "No trainer process is currently running."
 
 @app.route("/internal/config")
 def trainer_config():
